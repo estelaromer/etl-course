@@ -39,3 +39,123 @@
 **Option 2 (more engaging)**
 - Use Python with pandas + SQLAlchemy
 - Visualize the loaded data with a simple dashboard (e.g. Streamlit or PowerBI)
+## CONTEXT AND KEY CONCEPTS
+### WHAT IS A DATA PIPELINE
+
+A **data pipeline** is a series of steps that move and process data from one system to another.
+
+![Datapipeline](./images/datapipeline.png)
+
+A typical data pipeline has **three main stages**:
+1. **Extract** - Get the data
+    - From a file, a database, an API or another source
+    - Example: sales records from a web store
+2. **Transform** - Clean and prepare the data
+    - Fix errors, convert formats, filter or enrich
+    - Example: remove duplicates, convert dates, calculate totals
+3. **Load** - Send the data to its destination
+    - A data warehouse, a database or a dashboard tool
+    - Example: load sales data into a report in Power BI
+
+#### Why do we need data pipelines?
+- To **automate** repetitive data tasks
+- To **combine** data from multiple systems
+- To **prepare** data for analysis or reporting
+- To make sure **data is clean, consistent, and up to date**
+
+Real-World Example
+
+Let’s say a company wants to monitor product sales every day.
+1.	Extract sales data from its e-commerce platform (like Shopify)
+2.	Transform the data: clean it, convert currencies, calculate daily totals
+3.	Load it into a dashboard tool (like Power BI or Looker Studio)
+
+Without a pipeline, someone would have to do this **manually every day**. With a pipeline, it's done **automatically and reliably**.
+### WHY DO ETL PROCESSES EXIST
+
+ETL processes exist **to make data more useful**
+
+In most organizations, data comes from many different sources — and **raw data is rarely ready to use**. ETL is the process that turns messy, scattered data into **organized, clean, and meaningful information**.
+#### The Main Reasons ETL exist:
+1. **Integrating data from multiple sources**
+
+2. **Cleaning and preparing data**
+
+3. **Making data available for analysis**
+
+4. **Automating and scaling data workflows**
+### DIFFERENCES BETWEEN ETL AND ELT
+
+ETL and ELT are two **different ways** to move and prepare data, but they have the **same goal**: To get data from a source into a usable format for analysis.
+#### ETL - Extract, Transform, Load
+- Data is transformed before it is loaded.
+- Used with traditional relational databases.
+- Transformation is done outside the destination.
+- Best for small/medium datasets, complex transformations, used in legacy systems or on-premise setups
+#### ELT - Extract, Load, Transform
+- Data is transformed after it is loaded.
+- Used with modern data warehouses.
+- Transformation is done inside the destination.
+- Best for large volumes of data, when warehouse has strong compute power, in cloud-first architectures
+
+ETL and ELT are complementary approaches. The choice depends on available tools, data volumes and business needs.
+### BASIC ARCHITECTURE OF AN ETL PROCESS
+
+Here’s what a simple ETL pipeline looks like:
+
+![Architecture](./images/etl-diagram.png)
+
+**1. Extract**
+- Pulls data from sources like:
+    - Databases (SQL server, MySQL)
+    - APIs (Stripe, Google Analytics)
+    - Files (CSV, Excel, JSON)
+
+**2. Transform**
+- Cleans and prepares the data
+    - Removes duplicates
+    - Fixes formatting
+    - Joins different datasets
+    - Calculates new metrics
+
+**3. Load**
+- Sends the final data to:
+    - A database (e.g., PostgreSQL)
+    - A data warehouse (e.g., BigQuery, Snowflake)
+    - Or even a dashboarding tool
+
+Once loaded, this data is ready to be used by:
+- Data analysts
+- BI platforms
+- Machine learning models
+
+### REAL EXAMPLE: "FROM EXCEL SALES DATA TO A POWER BI DASHBOARD"
+
+Let’s walk through a realistic example of a small business.
+
+#### The Situation:
+- A store tracks daily sales in Excel spreadsheets.
+- Every day, a new file is created with sales info (product, price, date).
+- The manager wants to see total daily sales in a dashboard.
+
+#### ETL process:
+
+**Extract**
+- Read multiple Excel files from a shared folder.
+
+**Transform**
+- Merge all files into one table
+- Clean inconsistent product names
+- Convert price fields to numbers
+- Group data by date and product
+- Calculate total daily revenue
+
+**Load**
+- Store the cleaned and structured data in a database (e.g., SQLite or PostgreSQL)
+- Connect Power BI to that database
+
+#### Final Result:
+- A Power BI dashboard showing:
+    - Sales per day
+    - Top-selling products
+    - Monthly revenue trends

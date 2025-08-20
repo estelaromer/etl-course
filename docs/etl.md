@@ -159,3 +159,38 @@ Let’s walk through a realistic example of a small business.
     - Sales per day
     - Top-selling products
     - Monthly revenue trends
+## THE THREE-PHASES: EXTRACT, TRANSFORM AND LOAD
+### ETL Step 1: Extract – Getting the Data
+
+**"Extract"** is the first step in any ETL process.
+
+It means **retrieving raw data** from its original source so we can process it later.
+
+**The goal:**
+
+**Access the data without changing it.**
+
+Just copy or pull the data into your pipeline.
+#### 1. Extracting from Files (CSV, JSON)
+
+Many businesses use files to store or exchange data — especially spreadsheets or exports from tools.
+
+**CSV Example:**
+
+You have a file called sales.csv:
+
+```
+Date,Product,Price
+2025-01-01,Shoes,59.99
+2025-01-01,T-shirt,19.99
+```
+
+In Python:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+print(df.head())
+```
+

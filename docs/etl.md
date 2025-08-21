@@ -193,4 +193,25 @@ import pandas as pd
 df = pd.read_csv("sales.csv")
 print(df.head())
 ```
+**JSON Example:**
 
+You have a file called users.json:
+
+```json
+[
+  {"name": "Alice", "email": "alice@example.com"},
+  {"name": "Bob", "email": "bob@example.com"}
+]
+```
+
+In Python:
+
+```python
+import json
+
+with open("users.json") as f:
+    data = json.load(f)
+
+for user in data:
+    print(user["name"])
+```

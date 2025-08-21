@@ -255,3 +255,14 @@ data = response.json()
 
 print(data["current"]["temp_c"])
 ```
+#### Summary
+
+| Source Type | Example Tool/Format | How to Extract                           |
+| ----------- | ------------------- | ---------------------------------------- |
+| Files       | CSV, JSON, Excel    | Use pandas, json or similar libraries    |
+| Databases   | PostgreSQL, MySQL   | Connect and query using SQL              |
+| APIs        | REST APIs (JSON)    | Use requests to call and parse responses |
+
+After data is extracted, it's still **raw** — messy, inconsistent, maybe incomplete.
+
+Next step: **Transform** it to prepare for analysis.

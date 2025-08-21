@@ -238,3 +238,20 @@ query = "SELECT * FROM sales WHERE date >= '2025-01-01'"
 df = pd.read_sql(query, conn)
 print(df.head())
 ```
+
+#### 3. Extracting from APIs
+
+Many modern platforms (e.g., Shopify, Stripe, Google Analytics) offer **APIs** to access their data in real-time.
+
+APIs usually return data in **JSON format**.
+
+**Example: Extract data from a fake weather API**
+
+```python
+import requests
+
+response = requests.get("https://api.weatherapi.com/v1/current.json?key=API_KEY&q=London")
+data = response.json()
+
+print(data["current"]["temp_c"])
+```

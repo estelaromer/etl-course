@@ -1,4 +1,6 @@
 import json
+import os
+import requests
 
 import pandas as pd
 
@@ -27,3 +29,17 @@ df = pd.read_sql(query, conn)
 print(df.head())
 
 conn.close()
+
+# API
+api_key=os.environ.get("API_KEY", ""),
+
+url = "http://api.marketstack.com/v2/eod/latest"
+params = {
+    "access_key": api_key,
+    "symbols": "AAPL"
+}
+
+response = requests.get(url, params=params)
+data = response.json()
+print(data['data'])
+

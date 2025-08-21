@@ -215,3 +215,26 @@ with open("users.json") as f:
 for user in data:
     print(user["name"])
 ```
+
+#### 2. Extracting from Databases (SQL)
+Data is often stored in relational databases like **PostgreSQL, MySQL, or SQL Server**.
+
+To extract data, you connect to the database and run a **SQL query**.
+
+**Example: Extract sales from a PostgreSQL database**
+
+```python
+import psycopg2
+import pandas as pd
+
+conn = psycopg2.connect(
+    dbname="shop_db",
+    user="user",
+    password="pass",
+    host="localhost"
+)
+
+query = "SELECT * FROM sales WHERE date >= '2025-01-01'"
+df = pd.read_sql(query, conn)
+print(df.head())
+```

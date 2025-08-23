@@ -297,3 +297,21 @@ df["price"] = df["price"].fillna(0)
 # Make all product names lowercase for consistency
 df["product"] = df["product"].str.lower()
 ```
+#### 2. Format Changes
+
+Sometimes data needs to be converted to a **standard format** so tools can use it properly.
+
+Common changes include:
+- Converting **dates** to standard formats
+- Changing **text** to lowercase or uppercase
+- Formatting **numbers** (e.g., from strings to floats)
+
+**Example: Convert date format and price type**
+
+```python
+# Convert string to datetime
+df["date"] = pd.to_datetime(df["date"])
+
+# Convert price to numeric
+df["price"] = pd.to_numeric(df["price"])
+```

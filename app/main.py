@@ -57,3 +57,17 @@ df["Product"] = df["Product"].str.lower()
 
 print('Sales Data transformed:')
 print(df)
+
+print(df['Date'].dtype)
+print(df['Product'].dtype)
+print(df['Price'].dtype)
+
+# Convert string to datetime
+df["Date"] = pd.to_datetime(df["Date"])
+
+# Convert price to numeric
+df["Price"] = pd.to_numeric(df["Price"])
+
+print(df['Date'].dtype)
+print(df['Product'].dtype)
+print(df['Price'].dtype)

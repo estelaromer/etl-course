@@ -1,5 +1,5 @@
-Date,Product,Price
-2025-01-01,Shoes,59.99
-2025-01-01,T-shirt,19.99
-2025-01-01,T-shirt,19.99
-2025-01-01,Coat,
+Date,Product,Price,Quantity,customer_id
+2025-01-01,Shoes,59.99,2,1
+2025-01-01,T-shirt,19.99,1,1
+2025-01-01,T-shirt,19.99,1,1
+2025-01-01,Coat,,3,2

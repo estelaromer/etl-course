@@ -19,6 +19,9 @@ with open("./data/users.json") as f:
 for user in data:
     print(user["name"])
 
+df_1 = pd.DataFrame(data)
+print(df_1)
+
 # PostgreSQL Database
 conn = get_connection()
 
@@ -26,8 +29,8 @@ load_sales_data(conn)
 
 query = "SELECT * FROM sales WHERE date >= '2025-01-01'"
 
-df_1 = pd.read_sql(query, conn)
-print(df_1.head())
+df_2 = pd.read_sql(query, conn)
+print(df_2.head())
 
 conn.close()
 
@@ -71,3 +74,13 @@ df["Price"] = pd.to_numeric(df["Price"])
 print(df['Date'].dtype)
 print(df['Product'].dtype)
 print(df['Price'].dtype)
+
+# Merge sales and users info using customer ID
+df["customer_id"] = df["customer_id"].astype(int)
+df_1["customer_id"] = df_1["customer_id"].astype(int)
+df = df.merge(df_1, on="customer_id")
+
+# Add a total column
+
+df["Total"] = df["Price"] * df["Quantity"]
+print(df)

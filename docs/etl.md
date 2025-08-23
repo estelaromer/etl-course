@@ -315,3 +315,27 @@ df["date"] = pd.to_datetime(df["date"])
 # Convert price to numeric
 df["price"] = pd.to_numeric(df["price"])
 ```
+#### 3. Data Enrichment and Merging
+
+Data is more powerful when **combined** with other information.
+
+This can mean:
+- Joining two datasets (e.g., sales + customer data)
+- Adding calculated fields (e.g., total = price × quantity)
+- Adding external info (e.g., currency exchange rates, weather data)
+
+**Example: Merge sales with customer info**
+
+```python
+# Load customer data
+customers = pd.read_csv("customers.csv")
+
+# Merge sales and customer info using customer ID
+df = df.merge(customers, on="customer_id", how="left")
+```
+
+**Example: Add a total column**
+
+```python
+df["total"] = df["price"] * df["quantity"]
+```

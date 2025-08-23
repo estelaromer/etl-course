@@ -266,3 +266,34 @@ print(data["current"]["temp_c"])
 After data is extracted, it's still **raw** — messy, inconsistent, maybe incomplete.
 
 Next step: **Transform** it to prepare for analysis.
+### ETL Step 2: Transform – Preparing the Data
+
+Once data is extracted, it’s often **messy, inconsistent, or incomplete**.
+
+The **Transform** step prepares that raw data for analysis by cleaning it, changing formats, combining sources, and more.
+
+The goal: **Turn raw data into clean, usable data**.
+#### 1. Data Cleaning
+
+Real-world data often contains problems:
+- Duplicates
+- Missing values
+- Wrong data types
+- Typos or inconsistent values
+
+**Example: Remove duplicates and fill missing values**
+
+```python
+import pandas as pd
+
+df = pd.read_csv("sales.csv")
+
+# Remove duplicate rows
+df = df.drop_duplicates()
+
+# Fill missing prices with 0
+df["price"] = df["price"].fillna(0)
+
+# Make all product names lowercase for consistency
+df["product"] = df["product"].str.lower()
+```

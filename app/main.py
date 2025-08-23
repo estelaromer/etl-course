@@ -6,6 +6,7 @@ import pandas as pd
 
 from db import get_connection, load_sales_data
 
+# Extract
 
 # CSV file
 df = pd.read_csv("./data/sales.csv")
@@ -25,21 +26,34 @@ load_sales_data(conn)
 
 query = "SELECT * FROM sales WHERE date >= '2025-01-01'"
 
-df = pd.read_sql(query, conn)
-print(df.head())
+df_1 = pd.read_sql(query, conn)
+print(df_1.head())
 
 conn.close()
 
 # API
-api_key=os.environ.get("API_KEY", ""),
+# api_key=os.environ.get("API_KEY", ""),
 
-url = "http://api.marketstack.com/v2/eod/latest"
-params = {
-    "access_key": api_key,
-    "symbols": "AAPL"
-}
+# url = "http://api.marketstack.com/v2/eod/latest"
+# params = {
+#     "access_key": api_key,
+#     "symbols": "AAPL"
+# }
 
-response = requests.get(url, params=params)
-data = response.json()
-print(data['data'])
+# response = requests.get(url, params=params)
+# data = response.json()
+# print(data['data'])
 
+# Transform sales data
+
+# Remove duplicate rows
+df = df.drop_duplicates()
+
+# Fill missing prices with 0
+df["Price"] = df["Price"].fillna(0)
+
+# Make all product names lowercase for consistency
+df["Product"] = df["Product"].str.lower()
+
+print('Sales Data transformed:')
+print(df)

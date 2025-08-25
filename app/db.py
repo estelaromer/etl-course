@@ -3,17 +3,24 @@ import time
 import psycopg2
 from psycopg2 import OperationalError
 import pandas as pd
+from sqlalchemy import create_engine
+
+HOST = os.environ.get("POSTGRES_HOST", "localhost")
+DATABASE = os.environ.get("POSTGRES_DB", "postgres")
+USER = os.environ.get("POSTGRES_USER", "postgres")
+PASSWORD = os.environ.get("POSTGRES_PASSWORD", "")
+PORT = os.environ.get("POSTGRES_PORT", "5432")
 
 def get_connection(retries=5, delay=3):
     """Intenta conectarse a la base de datos con reintentos automáticos."""
     while retries > 0:
         try:
             conn = psycopg2.connect(
-                host=os.environ.get("POSTGRES_HOST", "localhost"),
-                database=os.environ.get("POSTGRES_DB", "postgres"),
-                user=os.environ.get("POSTGRES_USER", "postgres"),
-                password=os.environ.get("POSTGRES_PASSWORD", ""),
-                port=os.environ.get("POSTGRES_PORT", "5432")
+                host=HOST,
+                database=DATABASE,
+                user=USER,
+                password=PASSWORD,
+                port=PORT
             )
             print("Conexión a PostgreSQL establecida.")
             return conn
@@ -49,3 +56,6 @@ def load_sales_data(conn, csv_path="./data/sales.csv"):
     conn.commit()
     cur.close()
     print(f"Datos cargados en la tabla 'sales' desde {csv_path}")
+
+def get_engine():
+    return create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")

@@ -339,3 +339,44 @@ df = df.merge(customers, on="customer_id", how="left")
 ```python
 df["total"] = df["price"] * df["quantity"]
 ```
+#### Summary
+| Transformation Type     | Purpose                               | Example       |
+| ----------------------- | ------------------------------------- | --------------|
+| Data Cleaning           | Fix or remove bad data                | Remove duplicates, fill nulls |
+| Format Changes          | Standardize data types and structure  | Dates, numbers, texts |
+| Data Enrichment/Merging | Add more value by combining datasets  | Merge tables, create new columns |
+
+After transformation, your data is **clean, consistent, and ready to be used**.
+
+Next step: **Load** it into a destination like a database or dashboard tool.
+### ETL Step 3: Load – Storing the Data
+
+After the data is **extracted and transformed**, it’s time to load it into its final destination.
+
+The goal: **Save the clean data somewhere useful** — where people, apps, or tools can use it for reporting, analytics, or decision-making.
+#### 1. Load to a Relational Database
+
+Relational databases like **PostgreSQL, MySQL, or SQL Server** are common for storing structured data.
+
+They're often used in:
+- Internal business apps
+- Data integrations
+- BI dashboards (connected via SQL)
+
+**Example: Load a DataFrame into PostgreSQL using Python**
+
+```python
+from sqlalchemy import create_engine
+import pandas as pd
+
+# Example transformed data
+df = pd.read_csv("clean_sales.csv")
+
+# Connect to PostgreSQL
+engine = create_engine("postgresql://user:password@localhost:5432/sales_db")
+
+# Load the data into a table called 'sales_cleaned'
+df.to_sql("sales_cleaned", engine, if_exists="replace", index=False)
+```
+
+Once loaded, data analysts or applications can query it using SQL.

@@ -4,7 +4,7 @@ import requests
 
 import pandas as pd
 
-from db import get_connection, load_sales_data
+from db import get_connection, get_engine, load_sales_data
 
 # Extract
 
@@ -84,3 +84,16 @@ df = df.merge(df_1, on="customer_id")
 
 df["Total"] = df["Price"] * df["Quantity"]
 print(df)
+
+# Load this dataframe to a PostreSQL table
+engine = get_engine()
+df.to_sql("sales_cleaned", engine, if_exists="replace", index=False)
+
+conn = get_connection()
+
+query = "SELECT * FROM sales_cleaned"
+
+df_3 = pd.read_sql(query, conn)
+print(df_3.head())
+
+conn.close()

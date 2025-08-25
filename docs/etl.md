@@ -380,3 +380,62 @@ df.to_sql("sales_cleaned", engine, if_exists="replace", index=False)
 ```
 
 Once loaded, data analysts or applications can query it using SQL.
+#### 2. Load to a Data Warehouse
+
+A **data warehouse** is designed to store **large volumes** of historical, **structured data** optimized for analytics.
+
+Common cloud data warehouses:
+- **Google BigQuery**
+- **Amazon Redshift**
+- **Snowflake**
+- **Azure Synapse**
+
+They’re built for:
+- Fast querying of big datasets
+- Handling transformations at scale (especially in **ELT** setups)
+
+**Example: Load CSV to BigQuery using Python**
+
+```python
+from google.cloud import bigquery
+
+client = bigquery.Client()
+
+job_config = bigquery.LoadJobConfig(
+    source_format=bigquery.SourceFormat.CSV,
+    skip_leading_rows=1,
+    autodetect=True,
+)
+
+with open("clean_sales.csv", "rb") as source_file:
+    job = client.load_table_from_file(
+        source_file,
+        "my_dataset.sales_cleaned",
+        job_config=job_config,
+    )
+
+job.result()  # Wait for completion
+```
+
+Once loaded, analysts can run SQL queries directly on massive datasets.
+#### 3. Load to Analytics or BI Systems
+
+Some ETL processes load data **directly into analytics tools** like:
+- **Power BI**
+- **Tableau**
+- **Looker**
+- **Excel (with a connected data source)**
+
+These tools can:
+- Connect to databases or warehouses
+- Automatically refresh data on a schedule
+- Display dashboards, KPIs, charts, and insights
+
+#### Summary
+| Destination Types | Used for | Examples |
+| ----------------- | -------- | -------- |
+| Relational Database | Apps, small/medium BI dashboards | PostgreSQL, MySQL, SQL Server |
+| Data Warehouse | Large-scale analytics, ELT | BigQuery, Redshift, Snowflake |
+| Analytics / BI Systems | Data visualization and reporting | Tableau, Looker, Power BI | 
+
+After loading, the data is **ready to be explored, queried, and turned into insights**.

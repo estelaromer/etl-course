@@ -1,4 +1,4 @@
-Date,Product,Price,Quantity,customer_id
+Date,Product,Price,Quantity,Customer_id
 2025-01-01,Shoes,59.99,2,1
 2025-01-01,T-shirt,19.99,1,1
 2025-01-01,T-shirt,19.99,1,1

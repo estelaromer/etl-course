@@ -60,3 +60,15 @@ def load_sales_data(conn, csv_path="./data/sales.csv"):
 
 def get_engine():
     return create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+
+def save_dataframe(df, table_name="sales_with_customers", if_exists="replace"):
+    """
+    Guarda un DataFrame en PostgreSQL usando SQLAlchemy.
+    Parámetros:
+        df (pd.DataFrame): DataFrame a guardar.
+        table_name (str): nombre de la tabla destino.
+        if_exists (str): comportamiento si la tabla ya existe ('replace', 'append' o 'fail').
+    """
+    engine = get_engine()
+    df.to_sql(table_name, engine, index=False, if_exists=if_exists)
+    print(f"✅ DataFrame guardado correctamente en la tabla '{table_name}'.")

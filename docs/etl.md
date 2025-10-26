@@ -149,8 +149,10 @@ In Python:
 
 ```python
 import pandas as pd
+import os
 
-df = pd.read_csv("sales.csv")
+file = os.path.abspath("data/sales.csv")
+df = pd.read_csv(file)
 print(df.head())
 ```
 **JSON Example:**
@@ -168,8 +170,10 @@ In Python:
 
 ```python
 import json
+import os
 
-with open("users.json") as f:
+file = os.path.abspath("data/users.json")
+with open(file) as f:
     data = json.load(f)
 
 for user in data:
@@ -184,18 +188,79 @@ To extract data, you connect to the database and run a **SQL query**.
 **Example: Extract sales from a PostgreSQL database**
 
 ```python
+# db.py
+import os
+import time
 import psycopg2
+from psycopg2 import OperationalError
+import pandas as pd
+from sqlalchemy import create_engine
+
+USER="testuser"
+PASSWORD="testpass"
+DATABASE="testdb"
+HOST="localhost"
+PORT=5432
+
+
+def get_connection(retries=5, delay=3):
+    """Intenta conectarse a la base de datos con reintentos automáticos."""
+    while retries > 0:
+        try:
+            conn = psycopg2.connect(
+                host=HOST,
+                database=DATABASE,
+                user=USER,
+                password=PASSWORD,
+                port=PORT
+            )
+            print("Conexión a PostgreSQL establecida.")
+            return conn
+        except OperationalError as e:
+            print("PostgreSQL no está listo, reintentando...", e)
+            retries -= 1
+            time.sleep(delay)
+
+    raise Exception("No se pudo conectar a PostgreSQL después de varios intentos")
+
+
+def load_sales_data(conn, csv_path="./data/sales.csv"):
+    """Crea la tabla 'sales' si no existe y carga los datos desde el CSV."""
+    df = pd.read_csv(csv_path)
+
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS sales (
+            date DATE,
+            product TEXT,
+            price NUMERIC
+        )
+    """)
+    conn.commit()
+
+    # Insertar fila por fila
+    for _, row in df.iterrows():
+        cur.execute(
+            "INSERT INTO sales (date, product, price) VALUES (%s, %s, %s)",
+            (row["Date"], row["Product"], row["Price"])
+        )
+
+    conn.commit()
+    cur.close()
+    print(f"Datos cargados en la tabla 'sales' desde {csv_path}")
+
+def get_engine():
+    return create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+```
+```python
+# extract-db.py
+from db import get_engine
 import pandas as pd
 
-conn = psycopg2.connect(
-    dbname="shop_db",
-    user="user",
-    password="pass",
-    host="localhost"
-)
+engine = get_engine()
 
 query = "SELECT * FROM sales WHERE date >= '2025-01-01'"
-df = pd.read_sql(query, conn)
+df = pd.read_sql(query, engine)
 print(df.head())
 ```
 
@@ -210,10 +275,10 @@ APIs usually return data in **JSON format**.
 ```python
 import requests
 
-response = requests.get("https://api.weatherapi.com/v1/current.json?key=API_KEY&q=London")
+response = requests.get("https://raw.githubusercontent.com/estelaromer/csv-examples/refs/heads/main/data.json")
 data = response.json()
 
-print(data["current"]["temp_c"])
+print(data["company"]["name"])
 ```
 #### Summary
 

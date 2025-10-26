@@ -5,11 +5,12 @@ from psycopg2 import OperationalError
 import pandas as pd
 from sqlalchemy import create_engine
 
-HOST = os.environ.get("POSTGRES_HOST", "localhost")
-DATABASE = os.environ.get("POSTGRES_DB", "postgres")
-USER = os.environ.get("POSTGRES_USER", "postgres")
-PASSWORD = os.environ.get("POSTGRES_PASSWORD", "")
-PORT = os.environ.get("POSTGRES_PORT", "5432")
+USER="testuser"
+PASSWORD="testpass"
+DATABASE="testdb"
+HOST="localhost"
+PORT=5432
+
 
 def get_connection(retries=5, delay=3):
     """Intenta conectarse a la base de datos con reintentos automáticos."""

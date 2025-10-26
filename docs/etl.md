@@ -310,17 +310,22 @@ Real-world data often contains problems:
 
 ```python
 import pandas as pd
+import os
 
-df = pd.read_csv("sales.csv")
+file = os.path.abspath("data/sales.csv")
+
+df = pd.read_csv(file)
 
 # Remove duplicate rows
 df = df.drop_duplicates()
 
 # Fill missing prices with 0
-df["price"] = df["price"].fillna(0)
+df["Price"] = df["Price"].fillna(0)
 
 # Make all product names lowercase for consistency
-df["product"] = df["product"].str.lower()
+df["Product"] = df["Product"].str.lower()
+
+print(df.head())
 ```
 #### 2. Format Changes
 
@@ -334,11 +339,22 @@ Common changes include:
 **Example: Convert date format and price type**
 
 ```python
+import pandas as pd
+import os
+
+file = os.path.abspath("data/sales.csv")
+
+df = pd.read_csv(file)
+
+print(df.dtypes)
+
 # Convert string to datetime
-df["date"] = pd.to_datetime(df["date"])
+df["Date"] = pd.to_datetime(df["Date"])
 
 # Convert price to numeric
-df["price"] = pd.to_numeric(df["price"])
+df["Price"] = pd.to_numeric(df["Price"])
+
+print(df.dtypes)
 ```
 #### 3. Data Enrichment and Merging
 

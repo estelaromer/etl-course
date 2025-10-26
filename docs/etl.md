@@ -407,19 +407,105 @@ They're often used in:
 - BI dashboards (connected via SQL)
 
 **Example: Load a DataFrame into PostgreSQL using Python**
-
 ```python
-from sqlalchemy import create_engine
+# db.py
+import os
+import time
+import psycopg2
+from psycopg2 import OperationalError
 import pandas as pd
+from sqlalchemy import create_engine
 
-# Example transformed data
-df = pd.read_csv("clean_sales.csv")
+USER="testuser"
+PASSWORD="testpass"
+DATABASE="testdb"
+HOST="localhost"
+PORT=5432
 
-# Connect to PostgreSQL
-engine = create_engine("postgresql://user:password@localhost:5432/sales_db")
 
-# Load the data into a table called 'sales_cleaned'
-df.to_sql("sales_cleaned", engine, if_exists="replace", index=False)
+def get_connection(retries=5, delay=3):
+    """Intenta conectarse a la base de datos con reintentos automáticos."""
+    while retries > 0:
+        try:
+            conn = psycopg2.connect(
+                host=HOST,
+                database=DATABASE,
+                user=USER,
+                password=PASSWORD,
+                port=PORT
+            )
+            print("Conexión a PostgreSQL establecida.")
+            return conn
+        except OperationalError as e:
+            print("PostgreSQL no está listo, reintentando...", e)
+            retries -= 1
+            time.sleep(delay)
+
+    raise Exception("No se pudo conectar a PostgreSQL después de varios intentos")
+
+
+def load_sales_data(conn, csv_path="./data/sales.csv"):
+    """Crea la tabla 'sales' si no existe y carga los datos desde el CSV."""
+    df = pd.read_csv(csv_path)
+
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS sales (
+            date DATE,
+            product TEXT,
+            price NUMERIC
+        )
+    """)
+    conn.commit()
+
+    # Insertar fila por fila
+    for _, row in df.iterrows():
+        cur.execute(
+            "INSERT INTO sales (date, product, price) VALUES (%s, %s, %s)",
+            (row["Date"], row["Product"], row["Price"])
+        )
+
+    conn.commit()
+    cur.close()
+    print(f"Datos cargados en la tabla 'sales' desde {csv_path}")
+
+def get_engine():
+    return create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+
+def save_dataframe(df, table_name="sales_with_customers", if_exists="replace"):
+    """
+    Guarda un DataFrame en PostgreSQL usando SQLAlchemy.
+    Parámetros:
+        df (pd.DataFrame): DataFrame a guardar.
+        table_name (str): nombre de la tabla destino.
+        if_exists (str): comportamiento si la tabla ya existe ('replace', 'append' o 'fail').
+    """
+    engine = get_engine()
+    df.to_sql(table_name, engine, index=False, if_exists=if_exists)
+    print(f"✅ DataFrame guardado correctamente en la tabla '{table_name}'.")
+
+```
+```python
+# load_sales_customer.py
+import pandas as pd
+import os
+from db import get_connection, save_dataframe
+
+# --- Leer los CSV ---
+file = os.path.abspath("data/sales.csv")
+file2 = os.path.abspath("data/customers.csv")
+
+customers = pd.read_csv(file)
+sales = pd.read_csv(file2)
+
+# --- Combinar ambos DataFrames por Customer_id ---
+merged = pd.merge(sales, customers, on="Customer_id", how="left")
+
+# --- Mostrar un resumen ---
+print(merged.head())
+
+# --- Guardar el DataFrame combinado en PostgreSQL ---
+save_dataframe(merged, table_name="sales_with_customers")
 ```
 
 Once loaded, data analysts or applications can query it using SQL.

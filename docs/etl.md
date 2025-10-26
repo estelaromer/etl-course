@@ -1,44 +1,4 @@
-# ETL
-## COURSE OBJECTIVE
-1. Understand what ETL means and why it's importatn in a company's data flow.
-2. Identify the phases of an ETL process and how they apply in real-world scenarios.
-3. Be able to design a simple ETL pipeline using modern tools.
-## COURSE STRUCTURE
-
-**1. Context and Key Concepts (1 hour)**
-- What is a data pipeline
-- Why do ETL processes exist?
-- Differences between ETL and ELT
-- Basic architecture of an ETL process
-- Real example: "From Excel sales data to a Power BI dashboard"
-
-**2. The Three-Phases: Extract, Transform and Load (1 hour)**
-
-**Extract**
-- From files (CSV, JSON)
-- From databases (SQL)
-- From APIs
-
-**Transform**
-- Data cleaning
-- Format changes
-- Data enrichment and merging
-
-**Load**
-- To a relational database
-- To a warehouse
-- To analytics systems
-
-**3. Hands-on Demo: Building a simple ETL (1-2 hours)**
-
-**Option 1 (low complexity)**
-- Extract data from a product CSV
-- Clean and normalize names and prices
-- Load into SQLite or PostgreSQL
-
-**Option 2 (more engaging)**
-- Use Python with pandas + SQLAlchemy
-- Visualize the loaded data with a simple dashboard (e.g. Streamlit or PowerBI)
+# ETL FOUNDAMENTALS
 ## CONTEXT AND KEY CONCEPTS
 ### WHAT IS A DATA PIPELINE
 
@@ -160,7 +120,7 @@ Let’s walk through a realistic example of a small business.
     - Top-selling products
     - Monthly revenue trends
 ## THE THREE-PHASES: EXTRACT, TRANSFORM AND LOAD
-### ETL Step 1: Extract – Getting the Data
+### ETL STEP 1: EXTRACT – GETTING THE DATA
 
 **"Extract"** is the first step in any ETL process.
 
@@ -266,7 +226,7 @@ print(data["current"]["temp_c"])
 After data is extracted, it's still **raw** — messy, inconsistent, maybe incomplete.
 
 Next step: **Transform** it to prepare for analysis.
-### ETL Step 2: Transform – Preparing the Data
+### ETL STEP 2: TRANSFORM – PREPARING THE DATA
 
 Once data is extracted, it’s often **messy, inconsistent, or incomplete**.
 
@@ -349,7 +309,7 @@ df["total"] = df["price"] * df["quantity"]
 After transformation, your data is **clean, consistent, and ready to be used**.
 
 Next step: **Load** it into a destination like a database or dashboard tool.
-### ETL Step 3: Load – Storing the Data
+### ETL STEP 3: LOAD – STORING THE DATA
 
 After the data is **extracted and transformed**, it’s time to load it into its final destination.
 
@@ -439,3 +399,70 @@ These tools can:
 | Analytics / BI Systems | Data visualization and reporting | Tableau, Looker, Power BI | 
 
 After loading, the data is **ready to be explored, queried, and turned into insights**.
+
+### BEST PRACTICES
+#### **Error Handling**
+
+Error handling is about **detecting and responding to failures at each stage without corrupting data or silently losing information**.
+1. Extract
+    - Handle missing files, corrupted formats, or broken connections gracefully
+    - Use try/except blocks and validate responses
+    - For APIs, handle HTTP errors and timeouts
+2. Transform
+    - Validate input data before transformation
+    - Use try/except blocks to catch and log transformation errors
+    - Stop the pipeline if critical fields (e.g., IDs, timestamps) are missing or malformed
+3. Load
+    - Check if the target table/schema exists before loading
+    - Validate data types match destination schema
+    - Retry failed insertions (especially in large batches or networks)
+
+#### **Performance**
+
+Performance is about **moving and transforming data quickly and efficiently while keeping pipelines reliable and scalable**.
+1. Extract
+    - Read only the necessary data (e.g., use SQL filters: WHERE date >= '2024-01-01')
+    - Use streaming or chunking when reading large files or API responses
+2. Transform
+    - Avoid unnecessary loops (use vectorized operations)
+    - Use efficient libraries (e.g., pandas, pyarrow)
+    - Profile runtime on large datasets
+3. Load
+    - Use batch inserts instead of row-by-row
+    - Use database indexes for faster queries post-load
+    - Avoid full refreshes if only incremental data has changed
+#### **Logging**
+
+Logging is about recording what happened and **making pipelines debuggable, auditable and trustworthy**.
+1. Extract
+    - Log:
+        - Source location (file path, URL, DB name)
+        - Timestamp of extraction
+        - Number of records retrieved
+        - Source version, if available
+2. Transform
+    - Log every transformation step
+        - Number of rows before/after filtering
+        - Data type changes
+        - Rows with missing values
+3. Load
+    - Log:
+        - Number of rows inserted
+        - Load timestamps
+        - Target table or schema name
+        - Whether the load was full or incremental
+
+#### **Idempotence**
+
+Idempotence means that **running the same operation multiple times has the same end result as running it once — no unintended side effects, no duplicate data, no corruption**.
+1. Extract
+    - Ensure repeated extractions return consistent results:
+        - Use timestamps or IDs to extract only new or changed records
+        - Save checkpoints or last successful extraction state
+2. Transform
+    - Ensure running the transformation twice gives the same result
+(e.g., don't duplicate rows if merging)
+    - Use consistent column renaming, ordering, and hashing
+3. Load
+    - Prevent duplicate inserts with primary keys, unique constraints, or upsert strategies (ON CONFLICT DO UPDATE)
+    - Use load checkpoints or hashes to detect unchanged data

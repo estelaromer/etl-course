@@ -522,30 +522,6 @@ Common cloud data warehouses:
 They’re built for:
 - Fast querying of big datasets
 - Handling transformations at scale (especially in **ELT** setups)
-
-**Example: Load CSV to BigQuery using Python**
-
-```python
-from google.cloud import bigquery
-
-client = bigquery.Client()
-
-job_config = bigquery.LoadJobConfig(
-    source_format=bigquery.SourceFormat.CSV,
-    skip_leading_rows=1,
-    autodetect=True,
-)
-
-with open("clean_sales.csv", "rb") as source_file:
-    job = client.load_table_from_file(
-        source_file,
-        "my_dataset.sales_cleaned",
-        job_config=job_config,
-    )
-
-job.result()  # Wait for completion
-```
-
 Once loaded, analysts can run SQL queries directly on massive datasets.
 #### 3. Load to Analytics or BI Systems
 

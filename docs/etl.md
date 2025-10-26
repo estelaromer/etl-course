@@ -188,7 +188,6 @@ To extract data, you connect to the database and run a **SQL query**.
 **Example: Extract sales from a PostgreSQL database**
 
 ```python
-# db.py
 import os
 import time
 import psycopg2
@@ -204,7 +203,6 @@ PORT=5432
 
 
 def get_connection(retries=5, delay=3):
-    """Intenta conectarse a la base de datos con reintentos automáticos."""
     while retries > 0:
         try:
             conn = psycopg2.connect(
@@ -214,18 +212,17 @@ def get_connection(retries=5, delay=3):
                 password=PASSWORD,
                 port=PORT
             )
-            print("Conexión a PostgreSQL establecida.")
+            print("Connection established.")
             return conn
         except OperationalError as e:
-            print("PostgreSQL no está listo, reintentando...", e)
+            print("PostgreSQL not ready, retrying...", e)
             retries -= 1
             time.sleep(delay)
 
-    raise Exception("No se pudo conectar a PostgreSQL después de varios intentos")
+    raise Exception("Could not connect to database after several retries")
 
 
 def load_sales_data(conn, csv_path="./data/sales.csv"):
-    """Crea la tabla 'sales' si no existe y carga los datos desde el CSV."""
     df = pd.read_csv(csv_path)
 
     cur = conn.cursor()
@@ -238,7 +235,6 @@ def load_sales_data(conn, csv_path="./data/sales.csv"):
     """)
     conn.commit()
 
-    # Insertar fila por fila
     for _, row in df.iterrows():
         cur.execute(
             "INSERT INTO sales (date, product, price) VALUES (%s, %s, %s)",
@@ -247,10 +243,15 @@ def load_sales_data(conn, csv_path="./data/sales.csv"):
 
     conn.commit()
     cur.close()
-    print(f"Datos cargados en la tabla 'sales' desde {csv_path}")
+    print(f"Data loaded to table 'sales' from {csv_path}")
 
 def get_engine():
     return create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+
+def save_dataframe(df, table_name="sales_with_customers", if_exists="replace"):
+    engine = get_engine()
+    df.to_sql(table_name, engine, index=False, if_exists=if_exists)
+    print(f"✅ Dataframe correctly saved into table '{table_name}'.")
 ```
 ```python
 # extract-db.py
@@ -408,7 +409,6 @@ They're often used in:
 
 **Example: Load a DataFrame into PostgreSQL using Python**
 ```python
-# db.py
 import os
 import time
 import psycopg2
@@ -424,7 +424,6 @@ PORT=5432
 
 
 def get_connection(retries=5, delay=3):
-    """Intenta conectarse a la base de datos con reintentos automáticos."""
     while retries > 0:
         try:
             conn = psycopg2.connect(
@@ -434,18 +433,17 @@ def get_connection(retries=5, delay=3):
                 password=PASSWORD,
                 port=PORT
             )
-            print("Conexión a PostgreSQL establecida.")
+            print("Connection established.")
             return conn
         except OperationalError as e:
-            print("PostgreSQL no está listo, reintentando...", e)
+            print("PostgreSQL not ready, retrying...", e)
             retries -= 1
             time.sleep(delay)
 
-    raise Exception("No se pudo conectar a PostgreSQL después de varios intentos")
+    raise Exception("Could not connect to database after several retries")
 
 
 def load_sales_data(conn, csv_path="./data/sales.csv"):
-    """Crea la tabla 'sales' si no existe y carga los datos desde el CSV."""
     df = pd.read_csv(csv_path)
 
     cur = conn.cursor()
@@ -458,7 +456,6 @@ def load_sales_data(conn, csv_path="./data/sales.csv"):
     """)
     conn.commit()
 
-    # Insertar fila por fila
     for _, row in df.iterrows():
         cur.execute(
             "INSERT INTO sales (date, product, price) VALUES (%s, %s, %s)",
@@ -467,44 +464,35 @@ def load_sales_data(conn, csv_path="./data/sales.csv"):
 
     conn.commit()
     cur.close()
-    print(f"Datos cargados en la tabla 'sales' desde {csv_path}")
+    print(f"Data loaded to table 'sales' from {csv_path}")
 
 def get_engine():
     return create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
 
 def save_dataframe(df, table_name="sales_with_customers", if_exists="replace"):
-    """
-    Guarda un DataFrame en PostgreSQL usando SQLAlchemy.
-    Parámetros:
-        df (pd.DataFrame): DataFrame a guardar.
-        table_name (str): nombre de la tabla destino.
-        if_exists (str): comportamiento si la tabla ya existe ('replace', 'append' o 'fail').
-    """
     engine = get_engine()
     df.to_sql(table_name, engine, index=False, if_exists=if_exists)
-    print(f"✅ DataFrame guardado correctamente en la tabla '{table_name}'.")
-
+    print(f"✅ Dataframe correctly saved into table '{table_name}'.")
 ```
 ```python
-# load_sales_customer.py
 import pandas as pd
 import os
 from db import get_connection, save_dataframe
 
-# --- Leer los CSV ---
+# --- Read CSVs ---
 file = os.path.abspath("data/sales.csv")
 file2 = os.path.abspath("data/customers.csv")
 
 customers = pd.read_csv(file)
 sales = pd.read_csv(file2)
 
-# --- Combinar ambos DataFrames por Customer_id ---
+# --- Combine dataframes by Customer_id ---
 merged = pd.merge(sales, customers, on="Customer_id", how="left")
 
-# --- Mostrar un resumen ---
+# --- show first lines ---
 print(merged.head())
 
-# --- Guardar el DataFrame combinado en PostgreSQL ---
+# --- Saved merged dataframe into PostgreSQL ---
 save_dataframe(merged, table_name="sales_with_customers")
 ```
 
